@@ -9978,3 +9978,416 @@ public:
         return res;
     }
 };"
+"88","6","Java","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+/*
+ * You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n
+*/","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+        int n = items.length;
+        int[] dp = new int[n];
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int profit = items[i][0];
+            int category = items[i][1];
+            dp[i] = profit + category * category;
+            for (int j = 0; j < i; j++) {
+                if (items[j][1] != category) {
+                    dp[i] = Math.max(dp[i], dp[j] + profit + category * category);
+                }
+            }
+            if (i >= k - 1) {
+                max = Math.max(max, dp[i]);
+            }
+        }
+        return max;
+    }
+}","class Solution {
+    public long findMaximumElegance(int[][] A, int k) {
+        Arrays.sort(A, (a, b) -> b[0] - a[0]);
+        long res = 0, cur = 0;
+        List<Integer> dup = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < A.length; ++i) {
+            if (i < k) {
+                if (seen.contains(A[i][1])) {
+                    dup.add(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (!seen.contains(A[i][1])) {
+                if (dup.isEmpty()) break;
+                cur += A[i][0] - dup.remove(dup.size() - 1);
+            }
+            seen.add(A[i][1]);
+            res = Math.max(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+}"
+"89","6","Python","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+""""""You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n""""""","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items.sort(key = lambda x: x[0], reverse = True)
+        category = {}
+        for i in range(len(items)):
+            if items[i][1] not in category:
+                category[items[i][1]] = 1
+            else:
+                category[items[i][1]] += 1
+        category = sorted(category.items(), key = lambda x: x[1], reverse = True)
+        ans = 0
+        for i in range(k):
+            ans += items[i][0]
+        ans += len(category) ** 2
+        return ans","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items = sorted(items, key=lambda v: -v[0])
+        res = cur = 0
+        A = []
+        seen = set()
+        for i, (p, c) in enumerate(items):
+            if i < k:
+                if c in seen:
+                    A.append(p)
+                cur += p
+            elif c not in seen:
+                if not A: break
+                cur += p - A.pop()
+            seen.add(c)
+            res = max(res, cur + len(seen) * len(seen))
+        return res"
+"90","6","C++","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+/*You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n*/","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+        int n = items.size();
+        vector<pair<int,int>> v;
+        for(int i=0;i<n;i++){
+            v.push_back({items[i][0],items[i][1]});
+        }
+        sort(v.begin(),v.end(),greater<pair<int,int>>());
+        int i=0;
+        long long ans = 0;
+        unordered_map<int,int> mp;
+        while(i<n && k>0){
+            if(mp[v[i].second]==0){
+                ans += v[i].first;
+                mp[v[i].second]++;
+                k--;
+            }
+            i++;
+        }
+        return ans + (k*k);
+    }
+};","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& A, int k) {
+        sort(A.begin(), A.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] > b[0];
+        });
+        long long res = 0, cur = 0;
+        vector<int> dup;
+        unordered_set<int> seen;
+        for (int i = 0; i < A.size(); ++i) {
+            if (i < k) {
+                if (seen.count(A[i][1])) {
+                    dup.push_back(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (seen.find(A[i][1]) == seen.end()) {
+                if (dup.empty()) break;
+                cur += A[i][0] - dup.back();
+                dup.pop_back();
+            }
+            seen.insert(A[i][1]);
+            res = fmax(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+};"
