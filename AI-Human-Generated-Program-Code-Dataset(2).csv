@@ -1,0 +1,4416 @@
+"88","6","Java","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+/*
+ * You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n
+*/","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+        int n = items.length;
+        int[] dp = new int[n];
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int profit = items[i][0];
+            int category = items[i][1];
+            dp[i] = profit + category * category;
+            for (int j = 0; j < i; j++) {
+                if (items[j][1] != category) {
+                    dp[i] = Math.max(dp[i], dp[j] + profit + category * category);
+                }
+            }
+            if (i >= k - 1) {
+                max = Math.max(max, dp[i]);
+            }
+        }
+        return max;
+    }
+}","class Solution {
+    public long findMaximumElegance(int[][] A, int k) {
+        Arrays.sort(A, (a, b) -> b[0] - a[0]);
+        long res = 0, cur = 0;
+        List<Integer> dup = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < A.length; ++i) {
+            if (i < k) {
+                if (seen.contains(A[i][1])) {
+                    dup.add(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (!seen.contains(A[i][1])) {
+                if (dup.isEmpty()) break;
+                cur += A[i][0] - dup.remove(dup.size() - 1);
+            }
+            seen.add(A[i][1]);
+            res = Math.max(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+}"
+"89","6","Python","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+""""""You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n""""""","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items.sort(key = lambda x: x[0], reverse = True)
+        category = {}
+        for i in range(len(items)):
+            if items[i][1] not in category:
+                category[items[i][1]] = 1
+            else:
+                category[items[i][1]] += 1
+        category = sorted(category.items(), key = lambda x: x[1], reverse = True)
+        ans = 0
+        for i in range(k):
+            ans += items[i][0]
+        ans += len(category) ** 2
+        return ans","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items = sorted(items, key=lambda v: -v[0])
+        res = cur = 0
+        A = []
+        seen = set()
+        for i, (p, c) in enumerate(items):
+            if i < k:
+                if c in seen:
+                    A.append(p)
+                cur += p
+            elif c not in seen:
+                if not A: break
+                cur += p - A.pop()
+            seen.add(c)
+            res = max(res, cur + len(seen) * len(seen))
+        return res"
+"90","6","C++","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+/*You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n*/","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+        int n = items.size();
+        vector<pair<int,int>> v;
+        for(int i=0;i<n;i++){
+            v.push_back({items[i][0],items[i][1]});
+        }
+        sort(v.begin(),v.end(),greater<pair<int,int>>());
+        int i=0;
+        long long ans = 0;
+        unordered_map<int,int> mp;
+        while(i<n && k>0){
+            if(mp[v[i].second]==0){
+                ans += v[i].first;
+                mp[v[i].second]++;
+                k--;
+            }
+            i++;
+        }
+        return ans + (k*k);
+    }
+};","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& A, int k) {
+        sort(A.begin(), A.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] > b[0];
+        });
+        long long res = 0, cur = 0;
+        vector<int> dup;
+        unordered_set<int> seen;
+        for (int i = 0; i < A.size(); ++i) {
+            if (i < k) {
+                if (seen.count(A[i][1])) {
+                    dup.push_back(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (seen.find(A[i][1]) == seen.end()) {
+                if (dup.empty()) break;
+                cur += A[i][0] - dup.back();
+                dup.pop_back();
+            }
+            seen.insert(A[i][1]);
+            res = fmax(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+};"
+"91","1","Java","easy","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","prompt = """"""
+You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4
+
+class Solution {
+    public int maxSum(int[] nums) {
+""""""","class Solution {    
+    public int maxSum(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+            if (max > 0 && nums[i] % max == 0) {
+                sum -= nums[i];
+            }
+        }
+        return sum;
+    }
+}","class Solution {
+    public int maxSum(int[] nums) {
+    int ans = -1;
+    Map<Integer,List<Integer>> ump = new HashMap<>();
+    for(int i = 0; i < nums.length; ++i){
+        int t = nums[i], maxDigit = 0;
+        while(t != 0){ //evaluate max digit in the number
+            maxDigit = Math.max(t%10, maxDigit);
+            t = t/10;
+        }
+        if(!ump.containsKey(maxDigit)) ump.put(maxDigit, new ArrayList<>());
+        ump.get(maxDigit).add(nums[i]); // add the number to the map 
+    }
+    for(Map.Entry<Integer, List<Integer>> entry: ump.entrySet()){
+        entry.getValue().sort(Comparator.reverseOrder()); //to find max two number in each max digit 
+        if(entry.getValue().size() >= 2) ans = Math.max(ans, entry.getValue().get(0) + entry.getValue().get(1)); //sum max two number and take max
+    }
+    return ans;
+    }
+}"
+"92","1","Python","easy","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","prompt = """"""
+You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4
+
+class Solution:
+    def maxSum (self, nums: List[int]) -> int:
+""""""","class Solution:    
+    def maxSum (self, nums: List[int]) -> int:
+        
+        nums.sort()
+        
+        max_sum = 0
+        
+        for i in range(len(nums)-1):
+            if nums[i] == nums[i+1]:
+                max_sum = max(max_sum, nums[i]*(len(nums)-i-1))
+                
+        return max_sum","class Solution:
+    def maxSum(self, nums: List[int]) -> int:
+        max_by_digit = defaultdict(int)
+        max_sum = -1
+
+        for num in nums:
+            digit = max(str(num))
+
+            if digit in max_by_digit:
+                max_sum = max(max_sum, max_by_digit[digit] + num)
+
+            max_by_digit[digit] = max(max_by_digit[digit], num)
+
+        return max_sum"
+"93","1","C++","easy","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","prompt = """"""
+You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4
+
+class Solution {
+public:
+    int maxSum(vector<int>& nums) {
+""""""","class Solution {
+public:    int maxSum(vector<int>& nums) {
+        int n = nums.size();
+        int max_sum = -1;
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int sum = nums[i] + nums[j];
+                int max_digit = 0;
+                for (int k = 0; k < 10; k++) {
+                    if (sum % 10 == k) {
+                        max_digit = max(max_digit, k);
+                    }
+                    sum /= 10;
+                }
+                if (mp.find(max_digit)!= mp.end()) {
+                    max_sum = max(max_sum, sum + mp[max_digit]);
+                }
+                mp[max_digit] = sum;
+            }
+        }
+        return max_sum;
+    }
+};","class Solution {
+    public:
+        int maxSum(vector<int>& nums) {
+        int res = -1, max_num[10] = {};
+        for (auto num : nums) {
+            int max_d = 0;
+            for (int v = num; v; v /= 10)
+                max_d = max(max_d, v % 10);
+            if (max_num[max_d])
+                res = max(res, max_num[max_d] + num);
+            max_num[max_d] = max(max_num[max_d], num);
+        }
+        return res;
+    }
+};"
+"94","2","Java","easy","InstructCodeT5+","HuggingFace Model","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","prompt = """"""
+Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'
+
+public class Solution {
+    public String finalString(String s) {
+""""""","public class Solution {    
+    public String finalString(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == 'i') {
+                sb.append(c);
+            } else {
+                sb.append(c);
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+}","class Solution {
+    public String finalString(String s) {
+        StringBuilder nm=new StringBuilder();
+        for(char c:s.toCharArray())
+        {
+            if(c=='i')
+            {
+                nm.reverse();
+            }
+            else
+            {
+                nm.append(c);
+            }
+        }
+        return nm.toString();
+    }
+}"
+"95","2","Python","easy","InstructCodeT5+","HuggingFace Model","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","prompt = """"""
+class Solution:
+    def finalString(self, s: str) -> str:
+
+Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'
+""""""","class Solution:
+    def finalString(self, s: str) -> str:
+        res = """"
+        for i in s:
+            if i!= 'i':
+                res += i
+            else:
+                res = res[::-1]
+        return res","class Solution:
+    def finalString(self, s: str) -> str:
+        while ""i"" in s:
+            index=s.index(""i"")
+
+            #first half and second half
+            first=s[:index][::-1]
+            second=s[index+1:]
+
+            s="""".join([first,second])
+        return s"
+"96","2","C++","easy","InstructCodeT5+","HuggingFace Model","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","prompt = """"""
+class Solution {
+public:
+    string finalString(string s) {
+/*Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'*/
+""""""","class Solution {
+public:    
+    string finalString(string s) {
+        string res = """";
+        for (int i = 0; i < s.length(); i++) {
+            res += s[s.length() - i - 1];
+        }
+        return res;
+    }
+};","class Solution {
+public:
+    string finalString(const string &s) {
+        string a, b;
+        for (char ch : s)
+            if (ch == 'i')
+                swap(a, b);
+            else
+                a += ch;
+        return string(rbegin(b), rend(b)) + a;
+    }
+};"
+"97","3","Java","medium","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","prompt = """"""
+
+class Solution {
+    public int minAbsoluteDifference(List<Integer> nums, int x) {
+
+/*You are given a 0-indexed integer List<> nums and an integer x.
+
+Find the minimum absolute difference between two elements in the List that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums.get(i) - nums.get(i)) is minimized.
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+ 
+Constraints:
+
+1 <= nums.size() <= 10^5
+1 <= nums.get(i) <= 10^9
+0 <= x < nums.size()
+*/
+""""""","class Solution {
+    int minAbsoluteDifference(List<Integer> nums, int x) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums.get(i) < min) {
+                min = nums.get(i);
+            }
+            if (nums.get(i) > max) {
+                max = nums.get(i);
+            }
+        }
+        int diff = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.size(); i++) {
+            if (Math.abs(nums.get(i) - min) >= x) {
+                diff = Math.min(diff, Math.abs(nums.get(i) - min));
+            }
+            if (Math.abs(nums.get(i) - max) >= x) {
+                diff = Math.min(diff, Math.abs(nums.get(i) - max));
+            }
+        }
+        return diff;
+    }
+}","class Solution {
+    int minAbsoluteDifference(List<Integer> nums, int x) {
+        int ans = Integer.MAX_VALUE;
+        TreeSet<Integer> s = new TreeSet<>();
+        for(int i = x; i < nums.size(); ++i){
+            s.add(nums.get(i-x));
+            Integer high = s.ceiling(nums.get(i)), low = s.floor(nums.get(i));
+            if(high != null) ans = Math.min(ans, Math.abs(nums.get(i) - high));
+            if(low != null) ans = Math.min(ans, Math.abs(nums.get(i) - low));
+        }
+        return ans;
+    }
+}"
+"98","3","Python","medium","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","prompt = """"""
+class Solution:
+    def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length 
+""""""","class Solution:
+    def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+        nums.sort()
+        res = float('inf')
+        for i in range(len(nums)-1):
+            res = min(res, abs(nums[i]-nums[i+1]))
+        return res","class Solution:
+  def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+    if x == 0:
+      return 0
+
+    arr, best_dist = SortedList([]), float('inf')
+    for i in range(x, len(nums)):
+      arr.add(nums[i - x])
+      v = nums[i]
+
+      pos = arr.bisect_left(v)
+      if pos < len(arr):
+        best_dist = min(best_dist, abs(arr[pos] - v))
+      if pos > 0:
+        best_dist = min(best_dist, abs(arr[pos - 1] - v))
+    
+    return best_dist"
+"99","3","C++","medium","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","prompt = """"""
+/*You are given a 0-indexed integer List<> nums and an integer x.
+
+Find the minimum absolute difference between two elements in the List that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums.get(i) - nums.get(i)) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+ 
+Constraints:
+
+1 <= nums.size() <= 10^5
+1 <= nums.get(i) <= 10^9
+0 <= x < nums.size()
+*/
+
+class Solution {
+public:
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+""""""","class Solution {
+public:    
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+        int min = INT_MAX;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (abs(nums[i] - nums[j]) >= x)
+                    continue;
+                min = min < abs(nums[i] - nums[j])? abs(nums[i] - nums[j]) : min;
+            }
+        }
+        return min;
+    }
+};","class Solution {
+public:
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+        int ans = INT_MAX;
+        set<int> s;
+        for(int i = x; i < nums.size(); ++i){
+            s.insert(nums[i-x]);
+            auto it = s.upper_bound(nums[i]);
+            if(it != s.end()) ans = min(ans, abs(nums[i] - *it));
+            if(it != s.begin()) ans = min(ans, abs(nums[i] - *prev(it)));
+        }
+        return ans;
+    }
+};"
+"100","4","Java","medium","InstructCodeT5+","HuggingFace Model","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","prompt = """"""
+class Solution {
+    public ListNode doubleIt(ListNode head) {
+/*You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself.*/
+""""""","class Solution {
+    public ListNode doubleIt(ListNode head) {
+        ListNode curr = head;
+        int currVal = 0;
+        while (curr!= null) {
+            currVal += curr.val;
+            curr.val = currVal;
+            curr = curr.next;
+        }
+        curr = head;
+        while (curr!= null) {
+            curr.val = curr.val * 2;
+            curr = curr.next;
+        }
+        return head;
+    }
+}","class Solution {
+    public ListNode doubleIt(ListNode head) {
+        if (head.val > 4)
+            head = new ListNode(0, head);
+        for(ListNode node = head; node != null; node = node.next) {
+            node.val = (node.val * 2) % 10;
+            if (node.next != null && node.next.val > 4)
+                node.val++;
+        }
+        return head;
+    }
+}"
+"101","4","Python","medium","InstructCodeT5+","HuggingFace Model","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","prompt = """"""
+class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself.
+""""""","class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if not head:
+            return head
+        
+        curr = head
+        while curr:
+            curr.val *= 2
+            curr = curr.next
+        return head","class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head.val > 4:
+            head = ListNode(0, head)
+        node = head
+        while node:
+            node.val = (node.val * 2) % 10
+            if node.next and node.next.val > 4:
+                node.val += 1
+            node = node.next
+        return head"
+"102","4","C++","medium","InstructCodeT5+","HuggingFace Model","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","prompt = """"""
+/*You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. 
+*/
+
+class Solution {
+public:
+    ListNode* doubleIt(ListNode* head) {
+""""""","class Solution {
+public:    
+    ListNode* doubleIt(ListNode* head) {
+        if(head == NULL) return NULL;
+        ListNode* cur = head;
+        ListNode* pre = NULL;
+        ListNode* next = NULL;
+        while(cur!= NULL) {
+            next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+        cur = pre;
+        while(cur!= NULL) {
+            cur->val *= 2;
+            cur = cur->next;
+        }
+        return pre;
+    }
+};","class Solution {
+public:
+    ListNode* doubleIt(ListNode* head) {
+        if (head->val > 4)
+            head = new ListNode(0, head);
+        for(ListNode* node = head; node; node = node->next) {
+            node->val = (node->val * 2) % 10;
+            if (node->next && node->next->val > 4)
+                node->val++;
+        }
+        return head;
+    }
+};"
+"103","5","Java","hard","InstructCodeT5+","HuggingFace Model","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","prompt = """"""
+You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9)
+
+class Solution {
+    public int maximumScore(List<Integer> nums, int k) {
+""""""","class Solution {    public int maximumScore(List<Integer> nums, int k) {
+        int n = nums.size();
+        int[] primes = new int[n];
+        int[] scores = new int[n];
+        Arrays.fill(primes, -1);
+        Arrays.fill(scores, 1);
+        
+        for (int i = 0; i < n; i++) {
+            primes[i] = getPrime(nums.get(i));
+        }
+        
+        int maxScore = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int l = Math.max(i, primes[i] - 1);
+                int r = Math.min(j, primes[j] - 1);
+                int score = (r - l + 1) * scores[j];
+                if (score > maxScore) {
+                    maxScore = score;
+                }
+            }
+        }
+        
+        return (int) (maxScore % (1e9 + 7));
+    }
+    
+    private int getPrime(int num) {
+        int res = num;
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                res = i;
+                break;
+            }
+        }
+        return res;
+    }
+}","class Solution {
+    static final int MOD = 1000000007;
+
+    public int maximumScore(List<Integer> nums, int k) {
+        int n = nums.size();
+
+        int upper = Collections.max(nums) + 1;
+
+        boolean[] prime = new boolean[upper];
+        int[] primeScore = new int[upper];
+        Arrays.fill(prime, true);
+        prime[0] = prime[1] = false;
+        for (int i = 2; i < upper; i++) {
+            if (prime[i]) {
+                for (int j = i; j < upper; j += i) {
+                    primeScore[j]++;
+                    prime[j] = false;
+                }
+            }
+        }
+
+        int[] nextGreaterElement = new int[n];
+        Arrays.fill(nextGreaterElement, n);
+        Stack<Integer> s = new Stack<>();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && primeScore[nums.get(i)] >= primeScore[nums.get(s.peek())]) {
+                s.pop();
+            }
+            nextGreaterElement[i] = s.empty() ? n : s.peek();
+            s.push(i);
+        }
+
+        int[] prevGreaterOrEqualElement = new int[n];
+        Arrays.fill(prevGreaterOrEqualElement, -1);
+        s = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && primeScore[nums.get(i)] > primeScore[nums.get(s.peek())]) {
+                s.pop();
+            }
+            prevGreaterOrEqualElement[i] = s.empty() ? -1 : s.peek();
+            s.push(i);
+        }
+
+        int res = 1;
+        int[][] tuples = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            tuples[i][0] = nums.get(i);
+            tuples[i][1] = i;
+        }
+        Arrays.sort(tuples, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return b[0] - a[0];
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            int num = tuples[i][0];
+            int idx = tuples[i][1];
+            int operations = Math.min((idx - prevGreaterOrEqualElement[idx]) * (nextGreaterElement[idx] - idx), k);
+            res = (int)((1L * res * pow(num, operations)) % MOD);
+            k -= operations;
+            if (k == 0) {
+                return res;
+            }
+        }
+
+        return res;
+    }
+
+    public int pow(int x, int n) {
+        int res = 1;
+        while (n > 0) {
+            if (n % 2 == 1) {
+                res = (int)((1L * res * x) % MOD);
+            }
+            x = (int)((1L * x * x) % MOD);
+            n /= 2;
+        }
+        return res;
+    }
+}"
+"104","5","Python","hard","InstructCodeT5+","HuggingFace Model","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","prompt = """"""
+You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9)
+
+class Solution:
+    def maximumScore(self, nums: List[int], k: int) -> int:
+""""""","class Solution:    
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        
+        n = len(nums)
+        
+        @lru_cache(None)
+        def dp(l, r, k):
+            if k == 0:
+                return 0
+            if l > r:
+                return 0
+            if l == r:
+                return nums[l]
+            
+            res = 0
+            for i in range(l, r + 1):
+                if i == l:
+                    res = max(res, dp(l + 1, r, k - 1))
+                elif i == r:
+                    res = max(res, dp(l, r - 1, k - 1))
+                else:
+                    res = max(res, dp(l + 1, r, k - 1) + nums[i] * nums[i])
+                    res = max(res, dp(l, r - 1, k - 1) + nums[i] * nums[i])
+            return res % (10**9 + 7)
+        
+        return dp(0, n - 1, k)","class Solution: 
+    MOD = 1000000007
+
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+
+        upper = max(nums) + 1
+
+        prime = [True]*upper
+        prime[0] = prime[1] = False
+        primeScore = [0]*upper
+        for i in range(2, upper):
+            if prime[i]:
+                for j in range(i, upper, i):
+                    primeScore[j] += 1
+                    prime[j] = False
+
+        nextGreaterElement = [n]*n
+        s = []
+        for i in range(n - 1, -1, -1):
+            while s and primeScore[nums[i]] >= primeScore[nums[s[-1]]]:
+                s.pop()
+            nextGreaterElement[i] = s[-1] if s else n
+            s.append(i)
+
+        prevGreaterOrEqualElement = [-1]*n
+        s = []
+        for i in range(n):
+            while s and primeScore[nums[i]] > primeScore[nums[s[-1]]]:
+                s.pop()
+            prevGreaterOrEqualElement[i] = s[-1] if s else -1
+            s.append(i)
+
+        res = 1
+        tuples = [[nums[i], i] for i in range(n)]
+        tuples.sort(reverse=True)
+        for num, idx in tuples:
+            operations = min((idx - prevGreaterOrEqualElement[idx]) * (nextGreaterElement[idx] - idx), k)
+            res = (res * self.pow(num, operations)) % self.MOD
+            k -= operations
+            if k == 0:
+                return res
+
+        return res
+
+    def pow(self, x: int, n: int) -> int:
+        res = 1
+        while n > 0:
+            if n % 2 == 1:
+                res = (res * x) % self.MOD
+            x = (x * x) % self.MOD
+            n //= 2
+        return res"
+"105","5","C++","hard","InstructCodeT5+","HuggingFace Model","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","prompt = """"""
+class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+
+/*You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) 
+*/
+""""""","class Solution {
+public:    
+    int getPrimeScore(int num) {
+        int count = 0;
+        for (int i = 2; i * i <= num; i++) {
+            while (num % i == 0) {
+                num /= i;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    int getMaxPrimeScore(vector<int>& nums, int l, int r) {
+        int maxPrimeScore = 0;
+        for (int i = l; i <= r; i++) {
+            maxPrimeScore = max(maxPrimeScore, getPrimeScore(nums[i]));
+        }
+        return maxPrimeScore;
+    }
+
+    int getMaxScore(vector<int>& nums, int l, int r) {
+        int maxScore = 0;
+        for (int i = l; i <= r; i++) {
+            maxScore = max(maxScore, nums[i]);
+        }
+        return maxScore;
+    }
+
+    int maximumScore(vector<int>& nums, int k) {
+        int score = 1;
+        int maxScore = 0;
+
+        int l = 0;
+        int r = nums.size() - 1;
+        
+        for (int i = 0; i < k; i++) {
+            int temp = getMaxScore(nums, l, r);
+            maxScore = max(maxScore, temp);
+            int tempPrimeScore = getMaxPrimeScore(nums, l, r);
+            int tempScore = temp * tempPrimeScore;
+            l = l + 1;
+            r = r - 1;
+        }
+        
+        return maxScore;
+    }
+};","class Solution {
+public:
+    const int MOD = 1000000007;
+
+    int maximumScore(vector<int>& nums, int k) {
+        int n = nums.size();
+
+        int upper = *max_element(nums.begin(), nums.end()) + 1;
+
+        vector<bool> prime(upper, true);
+        prime[0] = prime[1] = false;
+        vector<int> primeScore(upper, 0);
+        for (int i = 2; i < upper; i++) {
+            if (prime[i]) {
+                for (int j = i; j < upper; j += i) {
+                    primeScore[j]++;
+                    prime[j] = false;
+                }
+            }
+        }
+
+        vector<int> nextGreaterElement(n, n);
+        stack<int> s;
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && primeScore[nums[i]] >= primeScore[nums[s.top()]]) {
+                s.pop();
+            }
+            nextGreaterElement[i] = s.empty() ? n : s.top();
+            s.push(i);
+        }
+
+        vector<int> prevGreaterOrEqualElement(n, -1);
+        s = stack<int>();
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && primeScore[nums[i]] > primeScore[nums[s.top()]]) {
+                s.pop();
+            }
+            prevGreaterOrEqualElement[i] = s.empty() ? -1 : s.top();
+            s.push(i);
+        }
+
+        int res = 1;
+        vector<pair<int, int>> tuples(n);
+        for (int i = 0; i < n; i++) {
+            tuples[i].first = nums[i];
+            tuples[i].second = i;
+        }
+        sort(tuples.rbegin(), tuples.rend());
+        for (const auto& [num, i] : tuples) {
+            int operations = min((i - prevGreaterOrEqualElement[i]) * (nextGreaterElement[i] - i), k);
+            res = (int)((1L * res * pow(num, operations)) % MOD);
+            k -= operations;
+            if (k == 0) {
+                return res;
+            }
+        }
+
+        return res;
+    }
+
+    int pow(int x, int n) {
+        int res = 1;
+        while (n > 0) {
+            if (n % 2 == 1) {
+                res = (int)((1L * res * x) % MOD);
+            }
+            x = (int)((1L * x * x) % MOD);
+            n /= 2;
+        }
+        return res;
+    }
+};"
+"106","6","Java","hard","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","prompt = """"""
+/*You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n*/
+
+class Solution {
+    public long findMaximumElegance(int[][] items, int k) {
+""""""","class Solution {    
+    public long findMaximumElegance(int[][] items, int k) {
+        int n = items.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                if (i == 0) {
+                    dp[i][j] = 0;
+                } else if (j == 0) {
+                    dp[i][j] = 0;
+                } else if (j == 1) {
+                    dp[i][j] = items[i - 1][0];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], items[i - 1][0] + dp[i - 1][j - 1]);
+                }
+            }
+        }
+        return dp[n][k];
+    }
+}","class Solution {
+    public long findMaximumElegance(int[][] A, int k) {
+        Arrays.sort(A, (a, b) -> b[0] - a[0]);
+        long res = 0, cur = 0;
+        List<Integer> dup = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < A.length; ++i) {
+            if (i < k) {
+                if (seen.contains(A[i][1])) {
+                    dup.add(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (!seen.contains(A[i][1])) {
+                if (dup.isEmpty()) break;
+                cur += A[i][0] - dup.remove(dup.size() - 1);
+            }
+            seen.add(A[i][1]);
+            res = Math.max(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+}"
+"107","6","Python","hard","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","prompt = """"""
+You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n
+
+class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+""""""","class Solution:    
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        
+        @lru_cache(None)
+        def dp(i, k):
+            if k == 0:
+                return 0
+            if i == len(items):
+                return float('-inf')
+            return max(dp(i + 1, k), items[i][0] + dp(i + 1, k - 1))
+        
+        return dp(0, k)","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items = sorted(items, key=lambda v: -v[0])
+        res = cur = 0
+        A = []
+        seen = set()
+        for i, (p, c) in enumerate(items):
+            if i < k:
+                if c in seen:
+                    A.append(p)
+                cur += p
+            elif c not in seen:
+                if not A: break
+                cur += p - A.pop()
+            seen.add(c)
+            res = max(res, cur + len(seen) * len(seen))
+        return res"
+"108","6","C++","hard","InstructCodeT5+","HuggingFace Model","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","prompt = """"""
+You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n 
+
+class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+""""""","class Solution {
+public:    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+        int n = items.size();
+        vector<vector<int>> dp(n, vector<int>(2, 0));
+        dp[0][0] = items[0][0];
+        dp[0][1] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = max(dp[i - 1][0], items[i][0]);
+            dp[i][1] = dp[i - 1][1] + 1;
+        }
+        long long res = 0;
+        for (int i = 0; i < n - k + 1; i++) {
+            res = max(res, static_cast<long long>(dp[i][0] + dp[i + k - 1][0] + dp[i][1] * dp[i + k - 1][1]));
+        }
+        return res;
+    }
+};","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& A, int k) {
+        sort(A.begin(), A.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] > b[0];
+        });
+        long long res = 0, cur = 0;
+        vector<int> dup;
+        unordered_set<int> seen;
+        for (int i = 0; i < A.size(); ++i) {
+            if (i < k) {
+                if (seen.count(A[i][1])) {
+                    dup.push_back(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (seen.find(A[i][1]) == seen.end()) {
+                if (dup.empty()) break;
+                cur += A[i][0] - dup.back();
+                dup.pop_back();
+            }
+            seen.insert(A[i][1]);
+            res = fmax(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+};"
+"109","1","Java","easy","StarCoder","IDE Extension","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","public class Solution{
+    public int maxSum(int[] nums){
+        /*
+         * You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4
+*/","public class Solution{
+    public int maxSum(int[] nums){
+        int maxSum = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] % 10 == nums[j] % 10) {
+                    maxSum = Math.max(maxSum, nums[i] + nums[j]);
+                }
+            }
+        }
+        return maxSum == Integer.MIN_VALUE? -1 : maxSum; 
+    }
+    
+}","class Solution {
+    public int maxSum(int[] nums) {
+    int ans = -1;
+    Map<Integer,List<Integer>> ump = new HashMap<>();
+    for(int i = 0; i < nums.length; ++i){
+        int t = nums[i], maxDigit = 0;
+        while(t != 0){ //evaluate max digit in the number
+            maxDigit = Math.max(t%10, maxDigit);
+            t = t/10;
+        }
+        if(!ump.containsKey(maxDigit)) ump.put(maxDigit, new ArrayList<>());
+        ump.get(maxDigit).add(nums[i]); // add the number to the map 
+    }
+    for(Map.Entry<Integer, List<Integer>> entry: ump.entrySet()){
+        entry.getValue().sort(Comparator.reverseOrder()); //to find max two number in each max digit 
+        if(entry.getValue().size() >= 2) ans = Math.max(ans, entry.getValue().get(0) + entry.getValue().get(1)); //sum max two number and take max
+    }
+    return ans;
+    }
+}"
+"110","1","Python","easy","StarCoder","IDE Extension","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","""""""You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+ 
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4""""""
+
+class Solution:
+    def maxSum(self, nums: List[int]) -> int:","class Solution:
+    def maxSum(self, nums: List[int]) -> int:
+        if len(nums) == 1:
+            return nums[0]
+        if len(nums) == 2:
+            return max(nums)
+        max_sum = 0
+        for i in range(len(nums)):
+            for j in range(i+1, len(nums)):
+                if nums[i] % 10 == nums[j] % 10:
+                    max_sum = max(max_sum, nums[i] + nums[j])
+        return max_sum if max_sum > 0 else -1","class Solution:
+    def maxSum(self, nums: List[int]) -> int:
+        max_by_digit = defaultdict(int)
+        max_sum = -1
+
+        for num in nums:
+            digit = max(str(num))
+
+            if digit in max_by_digit:
+                max_sum = max(max_sum, max_by_digit[digit] + num)
+
+            max_by_digit[digit] = max(max_by_digit[digit], num)
+
+        return max_sum"
+"111","1","C++","easy","StarCoder","IDE Extension","You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4 ","class Solution {
+public:
+    int maxSum(vector<int>& nums) {
+/*You are given a 0-indexed integer array nums. You have to find the maximum sum of a pair of numbers from nums such that the maximum digit in both numbers are equal.
+
+Return the maximum sum or -1 if no such pair exists.
+
+Example 1:
+
+Input: nums = [51,71,17,24,42]
+Output: 88
+Explanation: 
+For i = 1 and j = 2, nums[i] and nums[j] have equal maximum digits with a pair sum of 71 + 17 = 88. 
+For i = 3 and j = 4, nums[i] and nums[j] have equal maximum digits with a pair sum of 24 + 42 = 66.
+It can be shown that there are no other pairs with equal maximum digits, so the answer is 88.
+
+Example 2:
+
+Input: nums = [1,2,3,4]
+Output: -1
+Explanation: No pair exists in nums with equal maximum digits.
+
+Constraints:
+
+2 <= nums.length <= 100
+1 <= nums[i] <= 10^4*/","class Solution {
+public:
+    int maxSum(vector<int>& nums) {
+    int n=nums.size();
+    int maxi=0;
+    int maxj=0;
+    int maxsum=0;
+    for(int i=0;i<n;i++){
+        for(int j=i+1;j<n;j++){
+            if(nums[i]>maxi){
+                maxi=nums[i];
+            }
+            if(nums[j]>maxj){
+                maxj=nums[j];
+            }
+            if(maxi==maxj){
+                maxsum=max(maxsum,maxi+maxj);
+            }
+        }
+    }
+    if(maxsum==0){
+        return -1;
+    }
+    return maxsum;
+    }
+};","class Solution {
+    public:
+        int maxSum(vector<int>& nums) {
+        int res = -1, max_num[10] = {};
+        for (auto num : nums) {
+            int max_d = 0;
+            for (int v = num; v; v /= 10)
+                max_d = max(max_d, v % 10);
+            if (max_num[max_d])
+                res = max(res, max_num[max_d] + num);
+            max_num[max_d] = max(max_num[max_d], num);
+        }
+        return res;
+    }
+};"
+"112","2","Java","easy","StarCoder","IDE Extension","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","public class Solution {
+    public String finalString(String s) {
+        /*
+         * Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'
+
+*/","public class Solution {
+    public String finalString(String s) {
+        String result = """";
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == 'i') {
+                result = new StringBuilder(result).reverse().toString();
+            } else {
+                result += c;
+            }
+        }
+        return result;
+    }
+}","class Solution {
+    public String finalString(String s) {
+        StringBuilder nm=new StringBuilder();
+        for(char c:s.toCharArray())
+        {
+            if(c=='i')
+            {
+                nm.reverse();
+            }
+            else
+            {
+                nm.append(c);
+            }
+        }
+        return nm.toString();
+    }
+}"
+"113","2","Python","easy","StarCoder","IDE Extension","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","""""""Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'""""""
+class Solution:
+    def finalString(self, s: str) -> str:","class Solution:
+    def finalString(self, s: str) -> str:
+        s = list(s)
+        for i in range(len(s)):
+            if s[i] == 'i':
+                s[i] = 'o'
+            else:
+                s[i] = 'i'
+        return ''.join(s)","class Solution:
+    def finalString(self, s: str) -> str:
+        while ""i"" in s:
+            index=s.index(""i"")
+
+            #first half and second half
+            first=s[:index][::-1]
+            second=s[index+1:]
+
+            s="""".join([first,second])
+        return s"
+"114","2","C++","easy","StarCoder","IDE Extension","Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'","class Solution {
+public:
+    string finalString(string s) {
+/*Your laptop keyboard is faulty, and whenever you type a character 'i' on it, it reverses the string that you have written. Typing other characters works as expected.
+
+You are given a 0-indexed string s, and you type each character of s using your faulty keyboard.
+
+Return the final string that will be present on your laptop screen.
+
+Example 1:
+
+Input: s = ""string""
+Output: ""rtsng""
+Explanation: 
+After typing first character, the text on the screen is ""s"".
+After the second character, the text is ""st"". 
+After the third character, the text is ""str"".
+Since the fourth character is an 'i', the text gets reversed and becomes ""rts"".
+After the fifth character, the text is ""rtsn"". 
+After the sixth character, the text is ""rtsng"". 
+Therefore, we return ""rtsng"".
+
+Example 2:
+
+Input: s = ""poiinter""
+Output: ""ponter""
+Explanation: 
+After the first character, the text on the screen is ""p"".
+After the second character, the text is ""po"". 
+Since the third character you type is an 'i', the text gets reversed and becomes ""op"". 
+Since the fourth character you type is an 'i', the text gets reversed and becomes ""po"".
+After the fifth character, the text is ""pon"".
+After the sixth character, the text is ""pont"". 
+After the seventh character, the text is ""ponte"". 
+After the eighth character, the text is ""ponter"". 
+Therefore, we return ""ponter"".
+ 
+Constraints:
+
+1 <= s.length <= 100
+s consists of lowercase English letters.
+s[0] != 'i'*/","class Solution {
+public:
+    string finalString(string s) {
+    int n=s.length();
+    string ans="""";
+    for(int i=0;i<n;i++){
+        if(s[i]=='i'){
+            ans=ans.substr(0,ans.length()-1);
+        }
+        else{
+            ans+=s[i];
+        }
+    }
+    return ans;
+    }
+};","class Solution {
+public:
+    string finalString(const string &s) {
+        string a, b;
+        for (char ch : s)
+            if (ch == 'i')
+                swap(a, b);
+            else
+                a += ch;
+        return string(rbegin(b), rend(b)) + a;
+    }
+};"
+"115","3","Java","medium","StarCoder","IDE Extension","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","class Solution {
+        /*
+         * You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length
+
+*/
+    public int minAbsoluteDifference(List<Integer> nums, int x) {","class Solution {
+    public int minAbsoluteDifference(List<Integer> nums, int x) {
+        int n = nums.size();
+        int[] arr  = new int[n];
+        for(int i = 0; i < n; i++) {
+            arr[i] = nums.get(i);
+        }
+        Arrays.sort(arr);
+        int res = Integer.MAX_VALUE;
+        for(int i =  0; i < n; i++) {
+            int left = i + 1;
+            int right = n - 1;
+            while(left <= right) {
+                int mid = left + (right - left) / 2;
+                if(arr[mid] - arr[  i] >= x) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            if(left < n) {
+                res = Math.min(res, arr[left] - arr[i]);
+            }
+            left  = 0;
+            right = i - 1;
+            while(left <= right) {
+                int mid = left + (right - left) / 2;
+                if(arr[i] - arr[mid] >= x) {
+                    left = mid + 1;
+                 } else {
+                    right = mid - 1;
+                }
+            }
+            if(right >= 0) {
+                res = Math.min(res, arr[i] - arr[right]);
+            }
+        }
+        return res;
+    }
+} ","class Solution {
+    int minAbsoluteDifference(List<Integer> nums, int x) {
+        int ans = Integer.MAX_VALUE;
+        TreeSet<Integer> s = new TreeSet<>();
+        for(int i = x; i < nums.size(); ++i){
+            s.add(nums.get(i-x));
+            Integer high = s.ceiling(nums.get(i)), low = s.floor(nums.get(i));
+            if(high != null) ans = Math.min(ans, Math.abs(nums.get(i) - high));
+            if(low != null) ans = Math.min(ans, Math.abs(nums.get(i) - low));
+        }
+        return ans;
+    }
+}"
+"116","3","Python","medium","StarCoder","IDE Extension","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","class Solution:
+    def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+""""""You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length """"""","class Solution:
+    def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+        nums.sort()
+        n = len(nums)
+        ans = float('inf')
+        for i in range(n):
+            for j in range(i+1, n):
+                if abs(nums[i] - nums[j]) < ans:
+                    ans = abs(nums[i] - nums[j])
+                if abs(nums[i] - nums[j]) == ans and abs(nums[i] - x) < abs(nums[j] - x):
+                    ans = abs(nums[i] - x)
+        return ans","class Solution:
+  def minAbsoluteDifference(self, nums: List[int], x: int) -> int:
+    if x == 0:
+      return 0
+
+    arr, best_dist = SortedList([]), float('inf')
+    for i in range(x, len(nums)):
+      arr.add(nums[i - x])
+      v = nums[i]
+
+      pos = arr.bisect_left(v)
+      if pos < len(arr):
+        best_dist = min(best_dist, abs(arr[pos] - v))
+      if pos > 0:
+        best_dist = min(best_dist, abs(arr[pos - 1] - v))
+    
+    return best_dist"
+"117","3","C++","medium","StarCoder","IDE Extension","You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length ","class Solution {
+public:
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+/*You are given a 0-indexed integer array nums and an integer x.
+
+Find the minimum absolute difference between two elements in the array that are at least x indices apart.
+
+In other words, find two indices i and j such that abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized.
+
+Return an integer denoting the minimum absolute difference between two elements that are at least x indices apart.
+
+Example 1:
+
+Input: nums = [4,3,2,4], x = 2
+Output: 0
+Explanation: We can select nums[0] = 4 and nums[3] = 4. 
+They are at least 2 indices apart, and their absolute difference is the minimum, 0. 
+It can be shown that 0 is the optimal answer.
+
+Example 2:
+
+Input: nums = [5,3,2,10,15], x = 1
+Output: 1
+Explanation: We can select nums[1] = 3 and nums[2] = 2.
+They are at least 1 index apart, and their absolute difference is the minimum, 1.
+It can be shown that 1 is the optimal answer.
+
+Example 3:
+
+Input: nums = [1,2,3,4], x = 3
+Output: 3
+Explanation: We can select nums[0] = 1 and nums[3] = 4.
+They are at least 3 indices apart, and their absolute difference is the minimum, 3.
+It can be shown that 3 is the optimal answer.
+ 
+Constraints:
+
+1 <= nums.length <= 10^5
+1 <= nums[i] <= 10^9
+0 <= x < nums.length*/","class Solution {
+public:
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+    int n=nums.size();
+    vector<int>v;
+    for(int i=0;i<n;i++)
+    {
+        v.push_back(abs(nums[i]-x));
+    }
+    sort(v.begin(),v.end());
+    int ans=v[0];
+    for(int i=1;i<n;i++)
+    {
+        ans=min(ans,v[i]-v[i-1]);
+    }
+    return ans;
+    }
+};","class Solution {
+public:
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+        int ans = INT_MAX;
+        set<int> s;
+        for(int i = x; i < nums.size(); ++i){
+            s.insert(nums[i-x]);
+            auto it = s.upper_bound(nums[i]);
+            if(it != s.end()) ans = min(ans, abs(nums[i] - *it));
+            if(it != s.begin()) ans = min(ans, abs(nums[i] - *prev(it)));
+        }
+        return ans;
+    }
+};"
+"118","4","Java","medium","StarCoder","IDE Extension","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","class Solution {
+    public ListNode doubleIt(ListNode head) {
+/*You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself.*/","class Solution {
+    public ListNode doubleIt(ListNode head) {
+    ListNode dummy = new ListNode(0);
+    dummy.next = head;
+    ListNode cur = dummy;
+    while (cur.next != null && cur.next.next != null) {
+        ListNode next = cur.next.next;
+        cur.next.next =  next.next;
+        next.next = cur.next;
+        cur.next = next;
+        cur = cur.next.next;
+    }
+    return dummy.next;
+    }
+}","class Solution {
+    public ListNode doubleIt(ListNode head) {
+        if (head.val > 4)
+            head = new ListNode(0, head);
+        for(ListNode node = head; node != null; node = node.next) {
+            node.val = (node.val * 2) % 10;
+            if (node.next != null && node.next.val > 4)
+                node.val++;
+        }
+        return head;
+    }
+}"
+"119","4","Python","medium","StarCoder","IDE Extension","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+""""""You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. """"""","class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head is None:
+            return None
+        temp = head
+        while temp is not None:
+            temp.val *= 2
+            temp = temp.next
+        return head","class Solution:
+    def doubleIt(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head.val > 4:
+            head = ListNode(0, head)
+        node = head
+        while node:
+            node.val = (node.val * 2) % 10
+            if node.next and node.next.val > 4:
+                node.val += 1
+            node = node.next
+        return head"
+"120","4","C++","medium","StarCoder","IDE Extension","You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. ","class Solution {
+public:
+    ListNode* doubleIt(ListNode* head) {
+/*You are given the head of a non-empty linked list representing a non-negative integer without leading zeroes.
+
+Return the head of the linked list after doubling it.
+
+Example 1:
+
+Input: head = [1,8,9]
+Output: [3,7,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 189. Hence, the returned linked list represents the number 189 * 2 = 378.
+
+Example 2:
+
+Input: head = [9,9,9]
+Output: [1,9,9,8]
+Explanation: The figure above corresponds to the given linked list which represents the number 999. Hence, the returned linked list reprersents the number 999 * 2 = 1998. 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 10^4]
+0 <= Node.val <= 9
+The input is generated such that the list represents a number that does not have leading zeros, except the number 0 itself. */","class Solution {
+public:
+    ListNode* doubleIt(ListNode* head) {
+        ListNode* temp=head;
+        while(temp!=NULL){
+            ListNode* temp2=temp->next;
+            temp->next=new ListNode(temp->val);
+            temp->next->next=temp2;
+            temp=temp2;
+        }
+        return head;
+    }
+};","class Solution {
+public:
+    ListNode* doubleIt(ListNode* head) {
+        if (head->val > 4)
+            head = new ListNode(0, head);
+        for(ListNode* node = head; node; node = node->next) {
+            node->val = (node->val * 2) % 10;
+            if (node->next && node->next->val > 4)
+                node->val++;
+        }
+        return head;
+    }
+};"
+"121","5","Java","hard","StarCoder","IDE Extension","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","public class Solution {
+/*
+ * You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9).
+*/
+    public int maximumScore(List<Integer> nums, int k) {","public class Solution {
+    public int maximumScore(List<Integer> nums, int k) {
+        
+        int n = nums.size();
+        int[] dp = new int[n];
+        int[] prime = new int[n];
+        int[] primeCount = new int[n];
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        
+        
+        for(int i = 0; i < n; i++){
+            dp[i] = nums.get(i);
+            prime[i] = getPrime(nums.get(i));
+            primeCount[i] = getPrimeCount(nums.get(i));
+            
+        }
+        
+        for(int i = 1; i < n; i++){
+            prefix[i] = prefix[i-1] + primeCount[i-1];
+        }
+        
+        for(int i = n-2; i >= 0; i--){
+            suffix[  i] = suffix[i+1] + primeCount[i+1];
+        }
+        
+        int[] dp2 = new int[n];
+        int[] dp3 = new int[n];
+        int[] dp4 = new int[n];
+        
+        for(int i = 0  ; i < n; i++){
+            dp2[i] = dp[i];
+            dp3[i] = dp[i];
+            dp4[i] = dp[i];
+        }
+        
+        for(int i = 0; i < k; i++){
+            int max  = -1;
+            int maxIndex = -1;
+            for(int j = 0; j < n; j++){
+                if(j == 0){
+                    dp2[j] = dp[j] * prime[j];
+                }else{
+                    dp2[j  ] = Math.max(dp2[j-1], dp[j] * prime[j]);
+                }
+                
+                if(j == n-1){
+                    dp3[j] = dp[j] * prime[j];
+                }else{
+                    dp3[j]  = Math.max(dp3[j+1], dp[j] * prime[j]);
+                }
+                
+                if(prefix[j] + suffix[j] - primeCount[j] > max){
+                    max = prefix[j] + suffix[j] - primeCount  [j];
+                    maxIndex = j;
+                }
+            }
+            
+            dp4[maxIndex] = 0;
+            
+            for(int j = 0; j < n; j++){
+                if(j == 0){
+                    dp4[j] = Math.max(dp4  [j], dp2[j]);
+                }else if(j == n-1){
+                    dp4[j] = Math.max(dp4[j], dp3[j]);
+                }else{
+                    dp4[j] = Math.max(dp4[j],  Math.max(dp2[j], dp3[j]));
+                }
+            }
+            
+            for(int j = 0; j < n; j++){
+                dp[j] = dp4[j];
+            }
+        }
+        
+        int sum = 0;
+        for(int i  = 0; i < n; i++){
+            sum = (sum + dp[i]) % 1000000007;
+        }
+        
+        return sum;
+    }
+    
+    public int getPrime(int num){
+        int count = 0;
+        for(  int i = 2; i <= num; i++){
+            if(num % i == 0){
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int getPrimeCount(int num){
+        int count = 0;
+        for(  int i =  2; i <= num; i++){
+            if(num % i == 0){
+                count++;
+            }
+        }
+        return count - 1;
+    }
+}","class Solution {
+    static final int MOD = 1000000007;
+
+    public int maximumScore(List<Integer> nums, int k) {
+        int n = nums.size();
+
+        int upper = Collections.max(nums) + 1;
+
+        boolean[] prime = new boolean[upper];
+        int[] primeScore = new int[upper];
+        Arrays.fill(prime, true);
+        prime[0] = prime[1] = false;
+        for (int i = 2; i < upper; i++) {
+            if (prime[i]) {
+                for (int j = i; j < upper; j += i) {
+                    primeScore[j]++;
+                    prime[j] = false;
+                }
+            }
+        }
+
+        int[] nextGreaterElement = new int[n];
+        Arrays.fill(nextGreaterElement, n);
+        Stack<Integer> s = new Stack<>();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && primeScore[nums.get(i)] >= primeScore[nums.get(s.peek())]) {
+                s.pop();
+            }
+            nextGreaterElement[i] = s.empty() ? n : s.peek();
+            s.push(i);
+        }
+
+        int[] prevGreaterOrEqualElement = new int[n];
+        Arrays.fill(prevGreaterOrEqualElement, -1);
+        s = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && primeScore[nums.get(i)] > primeScore[nums.get(s.peek())]) {
+                s.pop();
+            }
+            prevGreaterOrEqualElement[i] = s.empty() ? -1 : s.peek();
+            s.push(i);
+        }
+
+        int res = 1;
+        int[][] tuples = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            tuples[i][0] = nums.get(i);
+            tuples[i][1] = i;
+        }
+        Arrays.sort(tuples, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return b[0] - a[0];
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            int num = tuples[i][0];
+            int idx = tuples[i][1];
+            int operations = Math.min((idx - prevGreaterOrEqualElement[idx]) * (nextGreaterElement[idx] - idx), k);
+            res = (int)((1L * res * pow(num, operations)) % MOD);
+            k -= operations;
+            if (k == 0) {
+                return res;
+            }
+        }
+
+        return res;
+    }
+
+    public int pow(int x, int n) {
+        int res = 1;
+        while (n > 0) {
+            if (n % 2 == 1) {
+                res = (int)((1L * res * x) % MOD);
+            }
+            x = (int)((1L * x * x) % MOD);
+            n /= 2;
+        }
+        return res;
+    }
+}"
+"122","5","Python","hard","StarCoder","IDE Extension","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","class Solution:
+    def maximumScore(self, nums: List[int], k: int) -> int:
+""""""You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) """"""","class Solution:
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        dp = [0]*n
+        dp[0] = nums[0]
+        for i in range(1, n):
+            dp[i] = max(dp[i-1], nums[i])
+        ans = dp[k-1]
+        for i in range(k-1, n):
+            ans = max(ans, dp[i] * dp[k-1-i])
+        return ans % (10**9 + 7)","class Solution: 
+    MOD = 1000000007
+
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+
+        upper = max(nums) + 1
+
+        prime = [True]*upper
+        prime[0] = prime[1] = False
+        primeScore = [0]*upper
+        for i in range(2, upper):
+            if prime[i]:
+                for j in range(i, upper, i):
+                    primeScore[j] += 1
+                    prime[j] = False
+
+        nextGreaterElement = [n]*n
+        s = []
+        for i in range(n - 1, -1, -1):
+            while s and primeScore[nums[i]] >= primeScore[nums[s[-1]]]:
+                s.pop()
+            nextGreaterElement[i] = s[-1] if s else n
+            s.append(i)
+
+        prevGreaterOrEqualElement = [-1]*n
+        s = []
+        for i in range(n):
+            while s and primeScore[nums[i]] > primeScore[nums[s[-1]]]:
+                s.pop()
+            prevGreaterOrEqualElement[i] = s[-1] if s else -1
+            s.append(i)
+
+        res = 1
+        tuples = [[nums[i], i] for i in range(n)]
+        tuples.sort(reverse=True)
+        for num, idx in tuples:
+            operations = min((idx - prevGreaterOrEqualElement[idx]) * (nextGreaterElement[idx] - idx), k)
+            res = (res * self.pow(num, operations)) % self.MOD
+            k -= operations
+            if k == 0:
+                return res
+
+        return res
+
+    def pow(self, x: int, n: int) -> int:
+        res = 1
+        while n > 0:
+            if n % 2 == 1:
+                res = (res * x) % self.MOD
+            x = (x * x) % self.MOD
+            n //= 2
+        return res"
+"123","5","C++","hard","StarCoder","IDE Extension","You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9) ","class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+/*You are given an array nums of n positive integers and an integer k.
+
+Initially, you start with a score of 1. You have to maximize your score by applying the following operation at most k times:
+
+Choose any non-empty subarray nums[l, ..., r] that you haven't chosen previously.
+Choose an element x of nums[l, ..., r] with the highest prime score. If multiple such elements exist, choose the one with the smallest index.
+Multiply your score by x.
+Here, nums[l, ..., r] denotes the subarray of nums starting at index l and ending at the index r, both ends being inclusive.
+
+The prime score of an integer x is equal to the number of distinct prime factors of x. For example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5.
+
+Return the maximum possible score after applying at most k operations.
+
+Since the answer may be large, return it modulo 10^9 + 7.
+
+Example 1:
+
+Input: nums = [8,3,9,3,8], k = 2
+Output: 81
+Explanation: To get a score of 81, we can apply the following operations:
+- Choose subarray nums[2, ..., 2]. nums[2] is the only element in this subarray. Hence, we multiply the score by nums[2]. The score becomes 1 * 9 = 9.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 1, but nums[2] has the smaller index. Hence, we multiply the score by nums[2]. The score becomes 9 * 9 = 81.
+It can be proven that 81 is the highest score one can obtain.
+
+Example 2:
+
+Input: nums = [19,12,14,6,10,18], k = 3
+Output: 4788
+Explanation: To get a score of 4788, we can apply the following operations: 
+- Choose subarray nums[0, ..., 0]. nums[0] is the only element in this subarray. Hence, we multiply the score by nums[0]. The score becomes 1 * 19 = 19.
+- Choose subarray nums[5, ..., 5]. nums[5] is the only element in this subarray. Hence, we multiply the score by nums[5]. The score becomes 19 * 18 = 342.
+- Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] have a prime score of 2, but nums[2] has the smaller index. Hence, we multipy the score by nums[2]. The score becomes 342 * 14 = 4788.
+It can be proven that 4788 is the highest score one can obtain.
+ 
+Constraints:
+
+1 <= nums.length == n <= 10^5
+1 <= nums[i] <= 10^5
+1 <= k <= min(n * (n + 1) / 2, 10^9)*/","class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+        int MOD=1e9+7;
+        int n=nums.size();
+        vector<int> dp(n+1,0);
+        vector<int> primes;
+        for(int i=2;i<=n;i++) {
+            if(dp[i]==0) {
+                primes.push_back(i);
+                for(int j=i;j<=n;j+=i) {
+                    dp[j]+=1;
+                }
+            }
+        }
+        int ans=0;
+        for(int i=0;i<k;i++) {
+            int mx=0;
+            int mx_idx=-1;
+            for(int j=i;j<n;j++) {
+                if(mx<dp[j]) {
+                    mx=dp[j];
+                    mx_idx=j;
+                }
+            }
+            ans=(ans+nums[mx_idx]*primes[mx-1])%MOD;
+            dp[mx_idx]=0;
+        }
+        return ans;
+    }
+};","class Solution {
+public:
+    const int MOD = 1000000007;
+
+    int maximumScore(vector<int>& nums, int k) {
+        int n = nums.size();
+
+        int upper = *max_element(nums.begin(), nums.end()) + 1;
+
+        vector<bool> prime(upper, true);
+        prime[0] = prime[1] = false;
+        vector<int> primeScore(upper, 0);
+        for (int i = 2; i < upper; i++) {
+            if (prime[i]) {
+                for (int j = i; j < upper; j += i) {
+                    primeScore[j]++;
+                    prime[j] = false;
+                }
+            }
+        }
+
+        vector<int> nextGreaterElement(n, n);
+        stack<int> s;
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && primeScore[nums[i]] >= primeScore[nums[s.top()]]) {
+                s.pop();
+            }
+            nextGreaterElement[i] = s.empty() ? n : s.top();
+            s.push(i);
+        }
+
+        vector<int> prevGreaterOrEqualElement(n, -1);
+        s = stack<int>();
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && primeScore[nums[i]] > primeScore[nums[s.top()]]) {
+                s.pop();
+            }
+            prevGreaterOrEqualElement[i] = s.empty() ? -1 : s.top();
+            s.push(i);
+        }
+
+        int res = 1;
+        vector<pair<int, int>> tuples(n);
+        for (int i = 0; i < n; i++) {
+            tuples[i].first = nums[i];
+            tuples[i].second = i;
+        }
+        sort(tuples.rbegin(), tuples.rend());
+        for (const auto& [num, i] : tuples) {
+            int operations = min((i - prevGreaterOrEqualElement[i]) * (nextGreaterElement[i] - i), k);
+            res = (int)((1L * res * pow(num, operations)) % MOD);
+            k -= operations;
+            if (k == 0) {
+                return res;
+            }
+        }
+
+        return res;
+    }
+
+    int pow(int x, int n) {
+        int res = 1;
+        while (n > 0) {
+            if (n % 2 == 1) {
+                res = (int)((1L * res * x) % MOD);
+            }
+            x = (int)((1L * x * x) % MOD);
+            n /= 2;
+        }
+        return res;
+    }
+};"
+"124","6","Java","hard","StarCoder","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+/*
+ * You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n
+*/","public class Solution {
+    public int findMaximumElegance(int[][] items, int k) {
+        int n = items.length;
+        int[][] dp = new int[n][k];
+        for(int i=0; i<n; i++) {
+            dp[i][0] = items[i][0];
+        }
+        for(int i=1; i  <n; i++) {
+            for(int j=1; j<k; j++) {
+                int max = Integer.MIN_VALUE;
+                for(int m=0; m<i; m++) {
+                    if(items[m][1] != items[i][ 1]) {
+                        max = Math.max(max, dp[m][j-1]);
+                    }
+                }
+                dp[i][j] = max + items[i][0];
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int i= 0; i<n; i++) {
+            max = Math.max(max, dp[i][k-1]);
+        }
+        return max;
+    }
+}","class Solution {
+    public long findMaximumElegance(int[][] A, int k) {
+        Arrays.sort(A, (a, b) -> b[0] - a[0]);
+        long res = 0, cur = 0;
+        List<Integer> dup = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < A.length; ++i) {
+            if (i < k) {
+                if (seen.contains(A[i][1])) {
+                    dup.add(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (!seen.contains(A[i][1])) {
+                if (dup.isEmpty()) break;
+                cur += A[i][0] - dup.remove(dup.size() - 1);
+            }
+            seen.add(A[i][1]);
+            res = Math.max(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+}"
+"125","6","Python","hard","StarCoder","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+""""""You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n """"""","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        n = len(items)
+        dp = [[0]*n for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = items[i][0]
+        for l in range(2, n+1):
+            for i in range(n-l+1):
+                j = i+l-1
+                dp[i][j] = max(dp[i][j-1], dp[i+1][j]) + items[j][0]
+        return max(dp[0][k-1], dp[n-k][n-1])","class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items = sorted(items, key=lambda v: -v[0])
+        res = cur = 0
+        A = []
+        seen = set()
+        for i, (p, c) in enumerate(items):
+            if i < k:
+                if c in seen:
+                    A.append(p)
+                cur += p
+            elif c not in seen:
+                if not A: break
+                cur += p - A.pop()
+            seen.add(c)
+            res = max(res, cur + len(seen) * len(seen))
+        return res"
+"126","6","C++","hard","StarCoder","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+Explanation: In this example, we have to select a subsequence of size 2.
+We can select items[0] = [3,2] and items[2] = [10,1].
+The total profit in this subsequence is 3 + 10 = 13, and the subsequence contains 2 distinct categories [2,1].
+Hence, the elegance is 13 + 2^2 = 17, and we can show that it is the maximum achievable elegance. 
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+Explanation: In this example, we have to select a subsequence of size 3. 
+We can select items[0] = [3,1], items[2] = [2,2], and items[3] = [5,3]. 
+The total profit in this subsequence is 3 + 2 + 5 = 10, and the subsequence contains 3 distinct categories [1,2,3]. 
+Hence, the elegance is 10 + 3^2 = 19, and we can show that it is the maximum achievable elegance.
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+Explanation: In this example, we have to select a subsequence of size 3. 
+We should select all the items. 
+The total profit will be 1 + 2 + 3 = 6, and the subsequence contains 1 distinct category [1]. 
+Hence, the maximum elegance is 6 + 1^2 = 7.  
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n ","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+/*You are given a 0-indexed 2D integer array items of length n and an integer k.
+
+items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
+
+Let's define the elegance of a subsequence of items as total_profit + distinct_categories^2, where total_profit is the sum of all profits in the subsequence, and distinct_categories is the number of distinct categories from all the categories in the selected subsequence.
+
+Your task is to find the maximum elegance from all subsequences of size k in items.
+
+Return an integer denoting the maximum elegance of a subsequence of items with size exactly k.
+
+Note: A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order.
+
+Example 1:
+
+Input: items = [[3,2],[5,1],[10,1]], k = 2
+Output: 17
+
+Example 2:
+
+Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+Output: 19
+
+Example 3:
+
+Input: items = [[1,1],[2,1],[3,1]], k = 3
+Output: 7
+ 
+Constraints:
+
+1 <= items.length == n <= 10^5
+items[i].length == 2
+items[i][0] == profit_i
+items[i][1] == category_i
+1 <= profit_i <= 10^9
+1 <= category_i <= n 
+1 <= k <= n */","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& items, int k) {
+  int n=items.size();
+  vector<vector<int>>dp(n,vector<int>(k,0));
+  for(int i=0;i<n;i++)
+  {
+    dp[i][0]=items[i][0];
+  }
+  for(int i=1;i<n;i++)
+  {
+    for(int j=1;j<k;j++)
+    {
+      dp[i][j]=max(dp[i-1][j],dp[i-1][j-1]);
+      if(items[i][1]!=items[i-1][1])
+      {
+        dp[i][j]=max(dp[i][j],dp[i-1][j]+items[i][0]);
+      }
+    }
+  }
+  return dp[n-1][k-1];
+    }
+};","class Solution {
+public:
+    long long findMaximumElegance(vector<vector<int>>& A, int k) {
+        sort(A.begin(), A.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] > b[0];
+        });
+        long long res = 0, cur = 0;
+        vector<int> dup;
+        unordered_set<int> seen;
+        for (int i = 0; i < A.size(); ++i) {
+            if (i < k) {
+                if (seen.count(A[i][1])) {
+                    dup.push_back(A[i][0]);
+                }
+                cur += A[i][0];
+            } else if (seen.find(A[i][1]) == seen.end()) {
+                if (dup.empty()) break;
+                cur += A[i][0] - dup.back();
+                dup.pop_back();
+            }
+            seen.insert(A[i][1]);
+            res = fmax(res, cur + 1L * seen.size() * seen.size());
+        }
+        return res;
+    }
+};"
