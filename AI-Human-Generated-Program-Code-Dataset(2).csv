@@ -1,3 +1,4 @@
+"id","problem_number","language","difficulty","generator_name","generator_type","description","prompt","ai_generated_code","human_generated_code"
 "88","6","Java","hard","GitHub Copilot","IDE Extension","You are given a 0-indexed 2D integer array items of length n and an integer k.
 
 items[i] = [profit_i, category_i], where profit_i and category_i denote the profit and category of the i^th item respectively.
